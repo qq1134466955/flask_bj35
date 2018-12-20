@@ -4,6 +4,8 @@ from redis import StrictRedis
 
 class Config(object):
 
+    SECRET_KEY = "VJqxvU1Sih5OcaX+3TVuLXYfW/s+ESJj6v3CPoaS/B4RuQ/nd4cHw2zAgkU3ii77uooWs9a+Nqar7BpKTFQW1w=="
+
     # 链接数据库
     SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1:3306/flask_bj35'
     # 数据库设置是否追踪

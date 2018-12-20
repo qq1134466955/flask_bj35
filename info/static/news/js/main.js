@@ -101,7 +101,7 @@ $(function(){
 		$(this).find('a')[0].click()
 	})
 
-    // TODO 登录表单提交
+    // 登录表单提交
     $(".login_form_con").submit(function (e) {
         e.preventDefault()
         var mobile = $(".login_form #mobile").val()
@@ -116,12 +116,29 @@ $(function(){
             $("#login-password-err").show();
             return;
         }
-
+        var params = {
+            "mobile": mobile,
+            "passport": password
+        }
         // 发起登录请求
+        $.ajax({
+            url: "/passport/login",
+            type: "post",
+            contentType: "application/json",
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if (resp.errno == "0"){
+                    // 登录成功
+                    location.reload()
+                }else{
+                    alert(resp.errmsg)
+                }
+            }
+        })
     })
 
 
-    // TODO 注册按钮点击
+    // 注册按钮点击
     $(".register_form_con").submit(function (e) {
         // 阻止默认提交操作
         e.preventDefault()
@@ -151,7 +168,32 @@ $(function(){
             return;
         }
 
+        var params = {
+		    "mobile": mobile,
+            "smscode": smscode,
+            "password": password
+        }
         // 发起注册请求
+        $.ajax({
+            url: "/passport/register",
+            type: "post",
+            data: JSON.stringify(params),
+            headers: {
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            contentType: "application/json",
+            success: function (resp) {
+                if (resp.errno == "0"){
+                    // 注册成功, 重新刷新界面
+                    location.reload()
+                }else{
+                    alert(resp.errmsg)
+                    $("#register-password-err").html(resp.errmsg)
+                    $("#register-password-err").show()
+                }
+            }
+
+        })
 
     })
 })
@@ -200,6 +242,9 @@ function sendSMSCode() {
         url: "/passport/sms_code",
         type: "post",
         data: JSON.stringify(params),
+        headers: {
+            "X-CSRFToken": getCookie("csrf_token")
+        },
         contentType: "application/json",
         success: function (resp) {
             if (resp.errno == "0"){
@@ -267,4 +312,14 @@ function generateUUID() {
         return (c=='x' ? r : (r&0x3|0x8)).toString(16);
     });
     return uuid;
+}
+
+
+// 退出登录
+function logout() {
+    $.get("/passport/logout", function (resp) {
+        if (resp) {
+            location.reload()
+        }
+    })
 }

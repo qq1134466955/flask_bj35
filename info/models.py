@@ -60,14 +60,14 @@ class User(BaseModel, db.Model):
 
     @property
     def password(self):
-        raise AttributeError("当前属性不可读")
+        raise AttributeError('密码不可以被获取')
 
     @password.setter
-    def password(self, value):
-        self.password_hash = generate_password_hash(value)
+    def password(self,password):
+        self.password_hash = generate_password_hash(password)
 
-    def check_passowrd(self, password):
-        return check_password_hash(self.password_hash, password)
+    def check_password(self,password):
+        return  check_password_hash(self.password_hash,password)
 
     def to_dict(self):
         resp_dict = {

@@ -2,7 +2,7 @@ from flask import current_app
 from flask import render_template
 from flask import session
 
-from info.models import User
+from info.models import User, News
 from info.modelus.index import index_blu
 @index_blu.route('/')
 def index():
@@ -20,10 +20,26 @@ def index():
             user = User.query.get(user_id)
         except Exception as e:
             current_app.logger.error(e)
+
+    # 二、新闻点击排行功能实现
+    # 1、查询出来所有的新闻数据
+    # 2、进行排序？？按点击量排序
+    # 3、取出前六条新闻
+    # 4、渲染
+    news_list = News.query.order_by(News.clicks.desc()).limit(6) # obj,obj
+    # 5、将对象列表转化为字典列表
+    news_dict_li = []
+    for news_obj in news_list:
+        # 将新闻对象，变成字典
+        news_dict_li.append(news_obj.to_basic_dict())
     data = {
         # 三元表达式
-        "user_info":  user.to_dict() if user else None
+        "user_info": user.to_dict() if user else None,
+        "new_dict_li": news_dict_li
     }
+
+
+
 
 
 

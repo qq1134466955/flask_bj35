@@ -23,6 +23,7 @@ class Config(object):
     SESSION_PERMANENT = False
     # 设置存活时间
     PERMANENT_SESSION_LIFETIM = 86400 * 2
+
 class Development_Config(Config):
     DEBUG = True
     LOG_LEVEL = logging.DEBUG

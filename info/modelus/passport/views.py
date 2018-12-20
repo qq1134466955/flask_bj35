@@ -107,7 +107,7 @@ def get_sms_code():
         return jsonify(errno=RET.PARAMERR,errmsg='手机号格式输入错误')
     # 4、先从数据库中获取图片验证码
     try:
-        real_image_code = redis_store.get('ImageCode' + image_code_id)
+        real_image_code = redis_store.get('ImageCode_' + image_code_id)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR,errmsg='数据库查询错误')

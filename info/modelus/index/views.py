@@ -1,8 +1,10 @@
+from flask import g
 from flask import render_template, redirect, current_app, session, request, jsonify
 
 from info.models import User, News, Category
 # from info.modules.index import index_blu
 from info.modelus.index import index_blu
+from info.utils.common import user_login_data
 from info.utils.response_code import RET
 
 
@@ -60,20 +62,14 @@ def get_news_list():
 
 
 @index_blu.route("/")
+@user_login_data
 def index():
     """
     一、显示用户登录状态
     核心逻辑：查询出来用户信息，然后通过模板进行渲染
     :return:
     """
-    user_id = session.get("user_id")
-
-    user = None
-    if user_id:
-        try:
-            user = User.query.get(user_id)
-        except Exception as e:
-            current_app.logger.error(e)
+    user = g.user
 
     # 二、新闻点击排行功能实现
     # 1、查询出来所有的新闻数据

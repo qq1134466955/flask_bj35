@@ -253,3 +253,5 @@ def get_image_code():
 
     # 6、返回图片验证码
     return response
+
+

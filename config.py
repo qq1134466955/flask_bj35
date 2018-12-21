@@ -23,6 +23,9 @@ class Config(object):
     SESSION_PERMANENT = False
     # 设置存活时间
     PERMANENT_SESSION_LIFETIM = 86400 * 2
+    # TODO:
+    # 如果为True，当我们对一个已经查询出来的对象进行修改操作的话,不需要去使用db.session.conmmit
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 
 class Development_Config(Config):
     DEBUG = True

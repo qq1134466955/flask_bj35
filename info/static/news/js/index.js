@@ -67,6 +67,7 @@ function updateNewsData() {
     }
     $.get("/news_list", params, function (resp) {
         if (resp.errno == "0"){
+
             // 已经回去到数据之后，就不再让他获取数据了
             data_querying = false
             // 返回了数据 获取total_page
@@ -75,14 +76,15 @@ function updateNewsData() {
             if (cur_page == 1){
                 $(".list_con").html("")
             }
-            //2、拼接li标签-
-
+            //2、拼接li标签
             for (var i=0;i<resp.data.news_dict_li.length;i++) {
                 var news = resp.data.news_dict_li[i]
                 var content = '<li>'
-                content += '<a href="#" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>'
-                content += '<a href="#" class="news_title fl">' + news.title + '</a>'
-                content += '<a href="#" class="news_detail fl">' + news.digest + '</a>'
+                //  /news/id
+                // TODO 在两个双引号中间 /news/' + news.id + '
+                content += '<a href="/news/' + news.id + '" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>'
+                content += '<a href="/news/' + news.id + '" class="news_title fl">' + news.title + '</a>'
+                content += '<a href="/news/' + news.id + '" class="news_detail fl">' + news.digest + '</a>'
                 content += '<div class="author_info fl">'
                 content += '<div class="source fl">来源：' + news.source + '</div>'
                 content += '<div class="time fl">' + news.create_time + '</div>'

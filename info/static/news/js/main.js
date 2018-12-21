@@ -4,7 +4,7 @@ $(function(){
 	$('.login_btn').click(function(){
         $('.login_form_con').show();
 	})
-	
+
 	// 点击关闭按钮关闭登录框或者注册框
 	$('.shutoff').click(function(){
 		$(this).closest('form').hide();
@@ -124,12 +124,11 @@ $(function(){
         $.ajax({
             url: "/passport/login",
             type: "post",
+            headers: {
+                "X-CSRFToken": getCookie("csrf_token")
+            },
             contentType: "application/json",
             data: JSON.stringify(params),
-            headers:{
-
-                "X-CSRF-Tocken":getCookie('csrf_tocken')
-            },
             success: function (resp) {
                 if (resp.errno == "0"){
                     // 登录成功
@@ -247,7 +246,7 @@ function sendSMSCode() {
         type: "post",
         data: JSON.stringify(params),
         headers: {
-            "X-CSRF-Token": getCookie("csrf_token")
+            "X-CSRFToken": getCookie("csrf_token")
         },
         contentType: "application/json",
         success: function (resp) {
@@ -322,7 +321,7 @@ function generateUUID() {
 // 退出登录
 function logout() {
     $.get("/passport/logout", function (resp) {
-        if (resp) {
+        if (resp.errno == "0") {
             location.reload()
         }
     })

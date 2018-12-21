@@ -1,41 +1,44 @@
-from flask import current_app, jsonify
-from flask import render_template
-from flask import request
-from flask import session
+from flask import render_template, redirect, current_app, session, request, jsonify
 
 from info.models import User, News, Category
+# from info.modules.index import index_blu
 from info.modelus.index import index_blu
 from info.utils.response_code import RET
 
 
-@index_blu.route('/news_list')
+@index_blu.route("/news_list")
 def get_news_list():
-    '''
-    1、获取数据
-    1.1、校验数据
-    2、查询出所有新闻
+    """
+    0、获取数据
+    0.1 校验数据
+    1、查询出所有新闻 (查询对应分类的新闻)
+    2、排序 按照创建时间
     3、分页
     :return:
-    '''
-    cid = request.args.get('cid')
-    page = request.args.get('page')
-    per_page = request.args.get('per_page')
+    """
+    cid = request.args.get("cid", "1")
+    page = request.args.get("page", "1")
+    per_page = request.args.get("per_page", "10")
 
     try:
         cid = int(cid)
         page = int(page)
         per_page = int(per_page)
+        print(cid)
+        print(page)
+        print(per_page)
     except Exception as e:
         current_app.logger.error(e)
-        return jsonify(errno=RET.PARAMERR,errmsg='参数错误')
+        return jsonify(errno=RET.PARAMERR, errmsg="参数错误")
 
     # 1、查询出所有新闻
-    # 2「排序按照创建时间
+    # 2、排序 按照创建时间
     # 3、分页
+    # *args  ()   []
     filters = []
     if cid != 1:
         filters.append(News.category_id == cid)
-    paginate = News.query.filter(*filters).order_by(News.update_time.desc()).paginate(page,per_page,False)
+    paginate = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page, per_page, False)
 
     # 对象列表
     news_list = paginate.items
@@ -47,13 +50,13 @@ def get_news_list():
     for news in news_list:
         news_dict_li.append(news.to_dict())
 
-        data = {
-            "news_dict_li": news_dict_li,
-            "current_page":current_page,
-            "total_page": total_page
-        }
-        # js去控制html
-        return jsonify(errno=RET.OK,errmsg="OK",data=data)
+    data = {
+        "news_dict_li": news_dict_li,
+        "current_page": current_page,
+        "total_page": total_page
+    }
+    # js去控制html
+    return jsonify(errno=RET.OK, errmsg="OK", data=data)
 
 
 @index_blu.route("/")

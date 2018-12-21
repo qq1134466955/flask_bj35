@@ -1,10 +1,11 @@
-var currentCid = 0; // 当前分类 id
+var currentCid = 1; // 当前分类 id
 var cur_page = 1; // 当前页
 var total_page = 1;  // 总页数
 var data_querying = true;   // 是否正在向后台获取数据
 
 
 $(function () {
+    updateNewsData()
     // 首页分类切换
     $('.menu li').click(function () {
         var clickCid = $(this).attr('data-cid')
@@ -40,11 +41,57 @@ $(function () {
         var nowScroll = $(document).scrollTop();
 
         if ((canScrollHeight - nowScroll) < 100) {
-            // TODO 判断页数，去更新新闻数据
+            // 判断页数，去更新新闻数据
+            // 如果你现在没有加载数据，我才让你加载，如果你正在加载，不让你加载了
+            if (!data_querying){
+                // 加载数据
+                data_querying = true
+                // 如果当前页是最后一页，还加载数据吗？？？
+                if (cur_page < total_page){
+                    cur_page += 1
+                    updateNewsData()
+                }
+            }else{
+                data_querying = false
+            }
+
         }
     })
 })
 
 function updateNewsData() {
-    // TODO 更新新闻数据
+    // 更新新闻数据
+    var params = {
+        "cid": currentCid,
+        "page": cur_page
+    }
+    $.get("/news_list", params, function (resp) {
+        if (resp.errno == "0"){
+            // 已经回去到数据之后，就不再让他获取数据了
+            data_querying = false
+            // 返回了数据 获取total_page
+            total_page = resp.data.total_page
+            //1、先把静态的新闻删除
+            if (cur_page == 1){
+                $(".list_con").html("")
+            }
+            //2、拼接li标签-
+
+            for (var i=0;i<resp.data.news_dict_li.length;i++) {
+                var news = resp.data.news_dict_li[i]
+                var content = '<li>'
+                content += '<a href="#" class="news_pic fl"><img src="' + news.index_image_url + '?imageView2/1/w/170/h/170"></a>'
+                content += '<a href="#" class="news_title fl">' + news.title + '</a>'
+                content += '<a href="#" class="news_detail fl">' + news.digest + '</a>'
+                content += '<div class="author_info fl">'
+                content += '<div class="source fl">来源：' + news.source + '</div>'
+                content += '<div class="time fl">' + news.create_time + '</div>'
+                content += '</div>'
+                content += '</li>'
+                $(".list_con").append(content)
+            }
+        }else{
+            alert(resp.errmsg)
+        }
+    })
 }
